@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070a0c">
+  <title>Highlight Lab — Temporal Specular Study</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Highlight Lab home">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span class="brand-type">HIGHLIGHT<span>/</span>LAB</span>
+        <span class="edition">STUDY 05</span>
+      </a>
+      <div class="top-actions">
+        <div class="eye-switch" role="group" aria-label="Stereo eye">
+          <span class="switch-label">EYE</span>
+          <button class="eye-btn is-active" data-eye="0" type="button">L</button>
+          <button class="eye-btn" data-eye="1" type="button">R</button>
+        </div>
+        <a class="export-btn" href="/api/ledger.csv" download>
+          <span>EXPORT LEDGER</span>
+          <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v8m0 0 3-3m-3 3L4 6M2 11v2h10v-2"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot"></span> TEMPORAL SPECULAR RESAMPLING</p>
+          <h1>Follow the light.<br><em>Keep the frame still.</em></h1>
+        </div>
+        <div class="hero-side">
+          <p class="thesis">
+            Metal highlights break first. This pass tracks only a highlight's
+            center, peak and footprint — never a full-frame timewarp.
+          </p>
+          <div class="audit-pills" aria-label="Timeline audit">
+            <span><b id="audit-cross-eye">0</b> cross-eye samples</span>
+            <span><b id="audit-stereo">0.00°</b> stereo delta</span>
+            <span><b id="audit-cap">0</b> cap violations</span>
+            <span><b id="audit-warp">0</b> base warps</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene-grid" id="scene-grid" aria-label="Material scenes">
+        <div class="loading-card">
+          <span>CALIBRATING HISTORY GATE</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <article class="panel ledger-panel">
+          <header class="panel-head">
+            <div>
+              <p class="panel-kicker">PER-FRAME RECORD</p>
+              <h2>Track ledger</h2>
+            </div>
+            <span class="eye-chip" id="ledger-eye">LEFT EYE · L</span>
+          </header>
+          <div class="ledger-head" aria-hidden="true">
+            <span>OBJECT</span><span>CENTER X/Y</span><span>STRETCH</span><span>PEAK</span><span>ENERGY</span>
+          </div>
+          <div class="ledger-rows" id="ledger-rows"></div>
+          <p class="panel-foot">
+            History source and eye are checked at every sample. Stretch is the major-axis length in scene pixels.
+          </p>
+        </article>
+
+        <article class="panel gate-panel">
+          <header class="panel-head">
+            <div>
+              <p class="panel-kicker">COMPOSITE CONTROL</p>
+              <h2>History gate</h2>
+            </div>
+            <span class="eye-chip" id="gate-eye">EYE L · <span class="status-ok">ISOLATED</span></span>
+          </header>
+
+          <div class="gate-main">
+            <div class="gate-meters" id="gate-meters">
+              <div class="meter-block">
+                <div class="meter-label"><span>PEAK</span><b id="gate-peak">0.00</b></div>
+                <div class="meter"><i id="gate-peak-bar" style="width:0%"></i></div>
+              </div>
+              <div class="meter-block">
+                <div class="meter-label"><span>ENERGY</span><b id="gate-energy">0.00</b></div>
+                <div class="meter"><i id="gate-energy-bar" style="width:0%"></i></div>
+              </div>
+            </div>
+            <div class="gate-checks">
+              <div><span>HISTORY EYE</span><b class="status-ok" id="gate-history-eye">SAME EYE</b></div>
+              <div><span>ADDITIVE LIFT</span><b class="status-ok" id="gate-capped">NONE</b></div>
+              <div><span>REFLECTION SOURCE</span><b class="status-ok" id="gate-delta">LOCAL ONLY</b></div>
+            </div>
+          </div>
+
+          <div class="trace-head">
+            <span>ENERGY / RECENT HISTORY</span>
+            <div class="trace-legend">
+              <i class="dot metal"></i> METAL
+              <i class="dot sphere"></i> SPHERE
+              <i class="dot glass"></i> GLASS
+            </div>
+          </div>
+          <canvas id="trace" width="960" height="184" aria-label="Energy over time"></canvas>
+          <p class="panel-foot">
+            Convex history blend, clamped to the larger of current and sampled energy. Values cannot compound toward white.
+          </p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <footer class="transport">
+    <div class="transport-inner">
+      <button class="play-btn" id="play-btn" type="button" aria-label="Pause">
+        <svg class="icon-pause" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z"/></svg>
+        <svg class="icon-play" viewBox="0 0 18 18" aria-hidden="true"><path d="m5 3 10 6-10 6z"/></svg>
+      </button>
+      <button class="step-btn" id="step-back" type="button" aria-label="Previous frame">−</button>
+      <button class="step-btn" id="step-forward" type="button" aria-label="Next frame">+</button>
+      <div class="timecode" id="timecode">00:00.000</div>
+      <div class="scrub-wrap">
+        <input id="scrub" type="range" min="0" max="360" value="0" step="1" aria-label="Timeline position">
+        <div class="scrub-meta">
+          <span id="frame-label">FRAME 000 / 360</span>
+          <span id="motion-label">60 FPS · SEQUENCE 01</span>
+        </div>
+      </div>
+      <button class="history-toggle is-on" id="history-toggle" type="button" aria-pressed="true">
+        <span class="toggle-dot"></span>T−1 GHOST
+      </button>
+      <button class="speed-btn" id="speed-btn" type="button" aria-label="Playback speed">1×</button>
+    </div>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
