@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-11-24T19:09:34.785138346Z",
+  "resolution": [
+    640,
+    360
+  ],
+  "frames_rendered": 8,
+  "passthrough_latency": {
+    "samples": 8,
+    "measurement": "frame_available_to_composite",
+    "budget_ms": 16.667,
+    "min_ms": 9.61328,
+    "mean_ms": 11.173423875,
+    "p95_ms": 13.1271,
+    "max_ms": 13.1271,
+    "within_budget": true,
+    "within_budget_samples": 8
+  },
+  "depth": {
+    "source": "aligned-reference-depth",
+    "invalid_policy": "do-not-assert-virtual-in-front",
+    "invalid_fraction": 0.061610243055555555,
+    "invalid_in_sphere_fraction": 0.06625404416936279,
+    "visible_sphere_fraction": 0.6704177802785202,
+    "occluded_sphere_fraction": 0.263328175552117,
+    "virtual_front_pixels": 14298,
+    "occluded_pixels": 5616,
+    "invalid_depth_in_sphere_pixels": 1413,
+    "sphere_footprint_pixels": 21327,
+    "mean_confidence": 0.9963690850074769
+  },
+  "exposure": {
+    "method": "linear-irradiance-weighted-fusion",
+    "reference_index": 1,
+    "frames": [
+      {
+        "index": 0,
+        "scale": 0.125,
+        "nominal_ev": -3,
+        "measured_ev": -3.035095434744068,
+        "deviation_ev": -0.03509543474406805,
+        "clipped_fraction": 0,
+        "dark_fraction": 0,
+        "usable_fraction": 0.9383897569444445
+      },
+      {
+        "index": 1,
+        "scale": 1,
+        "nominal_ev": 0,
+        "measured_ev": 0,
+        "deviation_ev": 0,
+        "clipped_fraction": 0,
+        "dark_fraction": 0,
+        "usable_fraction": 0.9383897569444445
+      },
+      {
+        "index": 2,
+        "scale": 6,
+        "nominal_ev": 2.584962500721156,
+        "measured_ev": 2.456205372932564,
+        "deviation_ev": -0.12875712778859177,
+        "clipped_fraction": 0.9589539930555555,
+        "dark_fraction": 0,
+        "usable_fraction": 0.03905381944444444
+      }
+    ],
+    "fusion_inputs": 3,
+    "max_abs_deviation_ev": 0.12875712778859177,
+    "mean_clipped_fraction": 0.3196513310185185
+  },
+  "color_alignment": {
+    "method": "sensor-white-balance",
+    "gain_r": 1.035,
+    "gain_g": 1,
+    "gain_b": 0.935,
+    "blend_space": "linear-srgb",
+    "applied_before_mix": true
+  },
+  "system_layer": {
+    "mean_alpha": 0.01335988562091436,
+    "coverage": 0.07236111111111111,
+    "blend_space": "display-srgb",
+    "blend_order": "after-virtual"
+  },
+  "outputs": {
+    "composite": "/home/hj/userfeedback2/uid5-0002/out/composite.png",
+    "confidence": "/home/hj/userfeedback2/uid5-0002/out/confidence.png",
+    "depth": "/home/hj/userfeedback2/uid5-0002/out/depth.png",
+    "metrics": "/home/hj/userfeedback2/uid5-0002/out/metrics.json",
+    "passthrough": "/home/hj/userfeedback2/uid5-0002/out/passthrough.png",
+    "virtual": "/home/hj/userfeedback2/uid5-0002/out/virtual.png"
+  }
+}
