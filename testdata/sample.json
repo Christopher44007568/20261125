@@ -1,0 +1,64 @@
+{
+  "unit": "ns",
+  "frames": [
+    {
+      "frame_id": "f1",
+      "left": {
+        "capture_scene": {"start_ns": 0, "end_ns": 10000000},
+        "reprojection": {"start_ns": 10000000, "end_ns": 20000000},
+        "distortion": {"start_ns": 20000000, "end_ns": 30000000},
+        "composition": {"start_ns": 30000000, "end_ns": 40000000}
+      },
+      "right": {
+        "capture_scene": {"start_ns": 2000000, "end_ns": 12000000},
+        "reprojection": {"start_ns": 12000000, "end_ns": 22000000},
+        "distortion": {"start_ns": 22000000, "end_ns": 32000000},
+        "composition": {"start_ns": 32000000, "end_ns": 42000000}
+      }
+    },
+    {
+      "frame_id": "f2",
+      "left": {
+        "capture_scene": {"start_ns": 50000000, "end_ns": 60000000},
+        "reprojection": {"start_ns": 60000000, "end_ns": 70000000},
+        "distortion": {"start_ns": 70000000, "end_ns": 80000000},
+        "composition": {"start_ns": 80000000, "end_ns": 90000000}
+      },
+      "right": {
+        "capture_scene": {"start_ns": 50000000, "end_ns": 60000000},
+        "reprojection": {"start_ns": 70000000, "end_ns": 130000000},
+        "distortion": {"start_ns": 130000000, "end_ns": 140000000},
+        "composition": {"start_ns": 140000000, "end_ns": 150000000}
+      }
+    },
+    {
+      "frame_id": "f3",
+      "left": {
+        "capture_scene": {"start_ns": 200000000, "end_ns": 210000000},
+        "reprojection": {"start_ns": 210000000, "end_ns": 220000000},
+        "distortion": {"start_ns": 220000000, "end_ns": 230000000},
+        "composition": {"start_ns": 230000000, "end_ns": 240000000}
+      },
+      "right": {
+        "capture_scene": {"start_ns": 200000000, "end_ns": 210000000},
+        "reprojection": {"start_ns": 210000000, "end": "clock-unavailable", "duration_ns": 10000000},
+        "composition": {"start_ns": 220000000, "end_ns": 230000000}
+      }
+    },
+    {
+      "frame_id": "f4",
+      "left": {
+        "capture_scene": {"start_ns": 300000000, "end_ns": 310000000},
+        "reprojection": {"start_ns": 310000000, "end_ns": 320000000},
+        "distortion": {"start_ns": 320000000, "end_ns": 330000000},
+        "composition": {"start_ns": 330000000, "end_ns": 340000000}
+      },
+      "right": {
+        "capture_scene": {"start_ns": 300000000, "end_ns": 310000000},
+        "reprojection": {"start_ns": 315000000, "end_ns": 312000000},
+        "distortion": {"start_ns": 320000000, "end_ns": 330000000},
+        "composition": {"start_ns": 330000000, "end_ns": 340000000}
+      }
+    }
+  ]
+}
