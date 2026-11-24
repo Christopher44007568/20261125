@@ -1,0 +1,2458 @@
+{
+  "generated_at": "2026-11-24T23:55:02Z",
+  "go_version": "go1.27.4",
+  "module": "stereorollback (Go standard library only)",
+  "scenarios": [
+    {
+      "id": "left_eye_failure",
+      "title": "Left-eye failure preserves the right eye",
+      "description": "Left eye hits attachment creation, material parameter and reprojection faults; right eye keeps rendering and shared resources survive.",
+      "counters": {
+        "total_stereo_frames": 5,
+        "total_eye_surfaces": 10,
+        "successful_frames": 7,
+        "full_success_stereo_frames": 2,
+        "partial_stereo_frames": 3,
+        "placeholder_eye_frames": 3,
+        "shared_fallback_eye_frames": 0,
+        "shared_incident_frames": 0,
+        "left_eye_failures": 3,
+        "right_eye_failures": 0,
+        "shared_texture_corruptions": 0,
+        "eye_success_frames": {
+          "left": 2,
+          "right": 5
+        },
+        "eye_placeholder_frames": {
+          "left": 3
+        },
+        "failures_by_stage": {
+          "attachment_creation": 1,
+          "material_parameters": 1,
+          "reprojection": 1
+        },
+        "failures_by_fault": {
+          "attachment_create_failed": 1,
+          "material_parameter_error": 1,
+          "reprojection_timeout": 1
+        }
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F1",
+            "checksum": "65b50a9887177edaee7d5ebc921ecb361eb8d0f04783ff3a9fefcbdd9c885d6c",
+            "resource_id": "attach.L.f1",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F1",
+            "checksum": "49f155b78e0a5e1deb6d7c05731a49d55d0b70f75c0f7aa4be8b0a305cf8261a",
+            "resource_id": "attach.R.f1",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        },
+        {
+          "frame": 2,
+          "left": {
+            "eye": "left",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-left",
+            "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after attachment_creation failure"
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F2",
+            "checksum": "79f80442fdd3d0c7e09460388c8c30528391597149c7911cb575c93c24f62258",
+            "resource_id": "attach.R.f2",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 2,
+            "scope": "left_eye_failure",
+            "eye": "left",
+            "failure_stage": "attachment_creation",
+            "fault": "attachment_create_failed",
+            "message": "left eye: stage=attachment_creation fault=attachment_create_failed: attachment creation failed",
+            "rollback": {
+              "frame": 2,
+              "eye": "left",
+              "scope": "left_eye_failure",
+              "destroyed_private_resources": [
+                "attach.L.f2"
+              ],
+              "released_leases": [],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 2,
+              "scope": "left_eye_failure",
+              "eye": "left",
+              "failure_stage": "attachment_creation",
+              "fault": "attachment_create_failed",
+              "message": "left eye: stage=attachment_creation fault=attachment_create_failed: attachment creation failed",
+              "rollback": {
+                "frame": 2,
+                "eye": "left",
+                "scope": "left_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.L.f2"
+                ],
+                "released_leases": [],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 2,
+            "kind": "failed_eye_placeholder",
+            "scope": "left_eye_failure",
+            "failed_eye": "left",
+            "left": {
+              "eye": "left",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-left",
+              "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after attachment_creation failure"
+            },
+            "right": {
+              "eye": "right",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-R-F2",
+              "checksum": "79f80442fdd3d0c7e09460388c8c30528391597149c7911cb575c93c24f62258",
+              "resource_id": "attach.R.f2",
+              "width": 16,
+              "height": 16
+            },
+            "composed_marker": "L[PH-left]|R[EYE-R-F2]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 3,
+          "left": {
+            "eye": "left",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-left",
+            "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after material_parameters failure"
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F3",
+            "checksum": "812f075ee1d6b2329bb1dbed1651425ec13e584d1a19fd90590d34de3d9201ba",
+            "resource_id": "attach.R.f3",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 3,
+            "scope": "left_eye_failure",
+            "eye": "left",
+            "failure_stage": "material_parameters",
+            "fault": "material_parameter_error",
+            "message": "left eye: stage=material_parameters fault=material_parameter_error field=roughness: material parameter error",
+            "field": "roughness",
+            "rollback": {
+              "frame": 3,
+              "eye": "left",
+              "scope": "left_eye_failure",
+              "destroyed_private_resources": [
+                "attach.L.f3"
+              ],
+              "released_leases": [
+                {
+                  "lease_id": 23,
+                  "resource_id": "tex.shared_atlas",
+                  "owner": "eye:left"
+                },
+                {
+                  "lease_id": 24,
+                  "resource_id": "tex.shared_depth",
+                  "owner": "eye:left"
+                },
+                {
+                  "lease_id": 25,
+                  "resource_id": "ubo.shared_material",
+                  "owner": "eye:left"
+                }
+              ],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "restored_material_params": [
+                "roughness"
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 3,
+              "scope": "left_eye_failure",
+              "eye": "left",
+              "failure_stage": "material_parameters",
+              "fault": "material_parameter_error",
+              "message": "left eye: stage=material_parameters fault=material_parameter_error field=roughness: material parameter error",
+              "field": "roughness",
+              "rollback": {
+                "frame": 3,
+                "eye": "left",
+                "scope": "left_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.L.f3"
+                ],
+                "released_leases": [
+                  {
+                    "lease_id": 23,
+                    "resource_id": "tex.shared_atlas",
+                    "owner": "eye:left"
+                  },
+                  {
+                    "lease_id": 24,
+                    "resource_id": "tex.shared_depth",
+                    "owner": "eye:left"
+                  },
+                  {
+                    "lease_id": 25,
+                    "resource_id": "ubo.shared_material",
+                    "owner": "eye:left"
+                  }
+                ],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "restored_material_params": [
+                  "roughness"
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 3,
+            "kind": "failed_eye_placeholder",
+            "scope": "left_eye_failure",
+            "failed_eye": "left",
+            "left": {
+              "eye": "left",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-left",
+              "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after material_parameters failure"
+            },
+            "right": {
+              "eye": "right",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-R-F3",
+              "checksum": "812f075ee1d6b2329bb1dbed1651425ec13e584d1a19fd90590d34de3d9201ba",
+              "resource_id": "attach.R.f3",
+              "width": 16,
+              "height": 16
+            },
+            "composed_marker": "L[PH-left]|R[EYE-R-F3]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 4,
+          "left": {
+            "eye": "left",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-left",
+            "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after reprojection failure"
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F4",
+            "checksum": "f4bd4d81e6910e6c7e9f53ec271d376c6c67980b662f3994156e0232351cb1e7",
+            "resource_id": "attach.R.f4",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 4,
+            "scope": "left_eye_failure",
+            "eye": "left",
+            "failure_stage": "reprojection",
+            "fault": "reprojection_timeout",
+            "message": "left eye: stage=reprojection fault=reprojection_timeout elapsed=58ms budget=16ms: reprojection timed out: context deadline exceeded",
+            "elapsed_ms": 58,
+            "budget_ms": 16,
+            "rollback": {
+              "frame": 4,
+              "eye": "left",
+              "scope": "left_eye_failure",
+              "destroyed_private_resources": [
+                "attach.L.f4"
+              ],
+              "released_leases": [
+                {
+                  "lease_id": 29,
+                  "resource_id": "tex.shared_atlas",
+                  "owner": "eye:left"
+                },
+                {
+                  "lease_id": 30,
+                  "resource_id": "tex.shared_depth",
+                  "owner": "eye:left"
+                },
+                {
+                  "lease_id": 31,
+                  "resource_id": "ubo.shared_material",
+                  "owner": "eye:left"
+                }
+              ],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:right"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 4,
+              "scope": "left_eye_failure",
+              "eye": "left",
+              "failure_stage": "reprojection",
+              "fault": "reprojection_timeout",
+              "message": "left eye: stage=reprojection fault=reprojection_timeout elapsed=58ms budget=16ms: reprojection timed out: context deadline exceeded",
+              "elapsed_ms": 58,
+              "budget_ms": 16,
+              "rollback": {
+                "frame": 4,
+                "eye": "left",
+                "scope": "left_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.L.f4"
+                ],
+                "released_leases": [
+                  {
+                    "lease_id": 29,
+                    "resource_id": "tex.shared_atlas",
+                    "owner": "eye:left"
+                  },
+                  {
+                    "lease_id": 30,
+                    "resource_id": "tex.shared_depth",
+                    "owner": "eye:left"
+                  },
+                  {
+                    "lease_id": 31,
+                    "resource_id": "ubo.shared_material",
+                    "owner": "eye:left"
+                  }
+                ],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:right"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 4,
+            "kind": "failed_eye_placeholder",
+            "scope": "left_eye_failure",
+            "failed_eye": "left",
+            "left": {
+              "eye": "left",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-left",
+              "checksum": "ad33eb4dfa1fc1a19af4b2fa6401a5f9cfcc6edd0c66b726872fd1891893d225",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after reprojection failure"
+            },
+            "right": {
+              "eye": "right",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-R-F4",
+              "checksum": "f4bd4d81e6910e6c7e9f53ec271d376c6c67980b662f3994156e0232351cb1e7",
+              "resource_id": "attach.R.f4",
+              "width": 16,
+              "height": 16
+            },
+            "composed_marker": "L[PH-left]|R[EYE-R-F4]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 5,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F5",
+            "checksum": "18b0e06839e40ddc34daf3e48254540e13fa2aba6532758a6fc131eeaca48cd0",
+            "resource_id": "attach.L.f5",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F5",
+            "checksum": "58a12f42034795ebe02406f0ea2d3f532ef711fed3ae76932244de985c0a7dd8",
+            "resource_id": "attach.R.f5",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        }
+      ],
+      "pool_resources_after": [
+        {
+          "id": "img.placeholder.left",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.placeholder.right",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.shared_fallback",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "c7131ba00159e8db017603276fb7e19cccf1359a2929ca1b6aad777adfff2d4c",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_atlas",
+          "kind": "shared_texture",
+          "shared": true,
+          "generation": 1,
+          "width": 8,
+          "height": 8,
+          "checksum": "1a0e0ecf84382961a85aa8629e98aefcfeffdcf0fd74a6dd49d55d9706477ab2",
+          "state": "ready",
+          "ref_count": 4,
+          "users": [
+            "eye:left",
+            "eye:right",
+            "service:recorder",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1,
+            "service:recorder": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_depth",
+          "kind": "shared_depth",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_history",
+          "kind": "shared_history",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "ubo.shared_material",
+          "kind": "shared_material",
+          "shared": true,
+          "generation": 1,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        }
+      ],
+      "invariant_checks": [
+        {
+          "name": "all_three_fault_stages_recorded",
+          "ok": true,
+          "detail": "stages=map[attachment_creation:1 material_parameters:1 reprojection:1]"
+        },
+        {
+          "name": "only_injected_eye_uses_placeholder",
+          "ok": true,
+          "detail": "placeholder left=3 right=0"
+        },
+        {
+          "name": "other_eye_preserved_on_each_failure",
+          "ok": true,
+          "detail": "preserved real frames=3/3 for right eye"
+        },
+        {
+          "name": "placeholder_not_counted_as_success",
+          "ok": true,
+          "detail": "successful_eye_frames=7 (left=2 right=5), placeholders=3"
+        },
+        {
+          "name": "rollback_retains_shared_atlas_with_other_users",
+          "ok": true,
+          "detail": "atlas retained on all three rollbacks with opposite eye/reprojector/recorder"
+        },
+        {
+          "name": "whole_shared_set_survives",
+          "ok": true,
+          "detail": "atlas=true depth=true material=true history=true"
+        },
+        {
+          "name": "other_users_not_cleared",
+          "ok": true,
+          "detail": "atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]"
+        },
+        {
+          "name": "failed_eye_private_attachments_cleaned",
+          "ok": true,
+          "detail": "leftover attachments: "
+        },
+        {
+          "name": "scoped_failure_counts",
+          "ok": true,
+          "detail": "left=3 right=0"
+        }
+      ],
+      "clean": true
+    },
+    {
+      "id": "right_eye_failure",
+      "title": "Right-eye failure preserves the left eye",
+      "description": "Right eye hits attachment creation, material parameter and reprojection faults; left eye keeps rendering and shared resources survive.",
+      "counters": {
+        "total_stereo_frames": 5,
+        "total_eye_surfaces": 10,
+        "successful_frames": 7,
+        "full_success_stereo_frames": 2,
+        "partial_stereo_frames": 3,
+        "placeholder_eye_frames": 3,
+        "shared_fallback_eye_frames": 0,
+        "shared_incident_frames": 0,
+        "left_eye_failures": 0,
+        "right_eye_failures": 3,
+        "shared_texture_corruptions": 0,
+        "eye_success_frames": {
+          "left": 5,
+          "right": 2
+        },
+        "eye_placeholder_frames": {
+          "right": 3
+        },
+        "failures_by_stage": {
+          "attachment_creation": 1,
+          "material_parameters": 1,
+          "reprojection": 1
+        },
+        "failures_by_fault": {
+          "attachment_create_failed": 1,
+          "material_parameter_error": 1,
+          "reprojection_timeout": 1
+        }
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F1",
+            "checksum": "65b50a9887177edaee7d5ebc921ecb361eb8d0f04783ff3a9fefcbdd9c885d6c",
+            "resource_id": "attach.L.f1",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F1",
+            "checksum": "49f155b78e0a5e1deb6d7c05731a49d55d0b70f75c0f7aa4be8b0a305cf8261a",
+            "resource_id": "attach.R.f1",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        },
+        {
+          "frame": 2,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F2",
+            "checksum": "6a1b5eb3567196d9ad4e5d11a75be95411aab11b49739425c2df68de71c7791b",
+            "resource_id": "attach.L.f2",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-right",
+            "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after attachment_creation failure"
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 2,
+            "scope": "right_eye_failure",
+            "eye": "right",
+            "failure_stage": "attachment_creation",
+            "fault": "attachment_create_failed",
+            "message": "right eye: stage=attachment_creation fault=attachment_create_failed: attachment creation failed",
+            "rollback": {
+              "frame": 2,
+              "eye": "right",
+              "scope": "right_eye_failure",
+              "destroyed_private_resources": [
+                "attach.R.f2"
+              ],
+              "released_leases": [],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 2,
+              "scope": "right_eye_failure",
+              "eye": "right",
+              "failure_stage": "attachment_creation",
+              "fault": "attachment_create_failed",
+              "message": "right eye: stage=attachment_creation fault=attachment_create_failed: attachment creation failed",
+              "rollback": {
+                "frame": 2,
+                "eye": "right",
+                "scope": "right_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.R.f2"
+                ],
+                "released_leases": [],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 2,
+            "kind": "failed_eye_placeholder",
+            "scope": "right_eye_failure",
+            "failed_eye": "right",
+            "left": {
+              "eye": "left",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-L-F2",
+              "checksum": "6a1b5eb3567196d9ad4e5d11a75be95411aab11b49739425c2df68de71c7791b",
+              "resource_id": "attach.L.f2",
+              "width": 16,
+              "height": 16
+            },
+            "right": {
+              "eye": "right",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-right",
+              "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after attachment_creation failure"
+            },
+            "composed_marker": "L[EYE-L-F2]|R[PH-right]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 3,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F3",
+            "checksum": "c7d73ec5ad1098efe09187d863bbb144040afdaf078e18b314980c31c00c830f",
+            "resource_id": "attach.L.f3",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-right",
+            "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after material_parameters failure"
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 3,
+            "scope": "right_eye_failure",
+            "eye": "right",
+            "failure_stage": "material_parameters",
+            "fault": "material_parameter_error",
+            "message": "right eye: stage=material_parameters fault=material_parameter_error field=roughness: material parameter error",
+            "field": "roughness",
+            "rollback": {
+              "frame": 3,
+              "eye": "right",
+              "scope": "right_eye_failure",
+              "destroyed_private_resources": [
+                "attach.R.f3"
+              ],
+              "released_leases": [
+                {
+                  "lease_id": 26,
+                  "resource_id": "tex.shared_atlas",
+                  "owner": "eye:right"
+                },
+                {
+                  "lease_id": 27,
+                  "resource_id": "tex.shared_depth",
+                  "owner": "eye:right"
+                },
+                {
+                  "lease_id": 28,
+                  "resource_id": "ubo.shared_material",
+                  "owner": "eye:right"
+                }
+              ],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "restored_material_params": [
+                "roughness"
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 3,
+              "scope": "right_eye_failure",
+              "eye": "right",
+              "failure_stage": "material_parameters",
+              "fault": "material_parameter_error",
+              "message": "right eye: stage=material_parameters fault=material_parameter_error field=roughness: material parameter error",
+              "field": "roughness",
+              "rollback": {
+                "frame": 3,
+                "eye": "right",
+                "scope": "right_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.R.f3"
+                ],
+                "released_leases": [
+                  {
+                    "lease_id": 26,
+                    "resource_id": "tex.shared_atlas",
+                    "owner": "eye:right"
+                  },
+                  {
+                    "lease_id": 27,
+                    "resource_id": "tex.shared_depth",
+                    "owner": "eye:right"
+                  },
+                  {
+                    "lease_id": 28,
+                    "resource_id": "ubo.shared_material",
+                    "owner": "eye:right"
+                  }
+                ],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "restored_material_params": [
+                  "roughness"
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 3,
+            "kind": "failed_eye_placeholder",
+            "scope": "right_eye_failure",
+            "failed_eye": "right",
+            "left": {
+              "eye": "left",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-L-F3",
+              "checksum": "c7d73ec5ad1098efe09187d863bbb144040afdaf078e18b314980c31c00c830f",
+              "resource_id": "attach.L.f3",
+              "width": 16,
+              "height": 16
+            },
+            "right": {
+              "eye": "right",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-right",
+              "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after material_parameters failure"
+            },
+            "composed_marker": "L[EYE-L-F3]|R[PH-right]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 4,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F4",
+            "checksum": "0aa43088d15d51bd4893d854f37c69ec6558cdbb4e094a14f212368d2018bd60",
+            "resource_id": "attach.L.f4",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "placeholder",
+            "success": false,
+            "placeholder": true,
+            "marker": "PH-right",
+            "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+            "width": 16,
+            "height": 16,
+            "note": "declared placeholder after reprojection failure"
+          },
+          "full_success": false,
+          "failure": {
+            "frame": 4,
+            "scope": "right_eye_failure",
+            "eye": "right",
+            "failure_stage": "reprojection",
+            "fault": "reprojection_timeout",
+            "message": "right eye: stage=reprojection fault=reprojection_timeout elapsed=58ms budget=16ms: reprojection timed out: context deadline exceeded",
+            "elapsed_ms": 58,
+            "budget_ms": 16,
+            "rollback": {
+              "frame": 4,
+              "eye": "right",
+              "scope": "right_eye_failure",
+              "destroyed_private_resources": [
+                "attach.R.f4"
+              ],
+              "released_leases": [
+                {
+                  "lease_id": 32,
+                  "resource_id": "tex.shared_atlas",
+                  "owner": "eye:right"
+                },
+                {
+                  "lease_id": 33,
+                  "resource_id": "tex.shared_depth",
+                  "owner": "eye:right"
+                },
+                {
+                  "lease_id": 34,
+                  "resource_id": "ubo.shared_material",
+                  "owner": "eye:right"
+                }
+              ],
+              "retained_resources": [
+                {
+                  "id": "tex.shared_atlas",
+                  "kind": "shared_texture",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 4,
+                  "users": [
+                    "eye:left",
+                    "eye:right",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "service:recorder",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 4 ref(s)"
+                },
+                {
+                  "id": "tex.shared_depth",
+                  "kind": "shared_depth",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "tex.shared_history",
+                  "kind": "shared_history",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "other_users": [
+                    "eye:left",
+                    "stage:reprojector"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                },
+                {
+                  "id": "ubo.shared_material",
+                  "kind": "shared_material",
+                  "shared": true,
+                  "generation": 1,
+                  "ref_count": 2,
+                  "users": [
+                    "eye:left",
+                    "eye:right"
+                  ],
+                  "other_users": [
+                    "eye:left"
+                  ],
+                  "reason": "shared resource retained: other holders keep 2 ref(s)"
+                }
+              ],
+              "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+            }
+          },
+          "failures": [
+            {
+              "frame": 4,
+              "scope": "right_eye_failure",
+              "eye": "right",
+              "failure_stage": "reprojection",
+              "fault": "reprojection_timeout",
+              "message": "right eye: stage=reprojection fault=reprojection_timeout elapsed=58ms budget=16ms: reprojection timed out: context deadline exceeded",
+              "elapsed_ms": 58,
+              "budget_ms": 16,
+              "rollback": {
+                "frame": 4,
+                "eye": "right",
+                "scope": "right_eye_failure",
+                "destroyed_private_resources": [
+                  "attach.R.f4"
+                ],
+                "released_leases": [
+                  {
+                    "lease_id": 32,
+                    "resource_id": "tex.shared_atlas",
+                    "owner": "eye:right"
+                  },
+                  {
+                    "lease_id": 33,
+                    "resource_id": "tex.shared_depth",
+                    "owner": "eye:right"
+                  },
+                  {
+                    "lease_id": 34,
+                    "resource_id": "ubo.shared_material",
+                    "owner": "eye:right"
+                  }
+                ],
+                "retained_resources": [
+                  {
+                    "id": "tex.shared_atlas",
+                    "kind": "shared_texture",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 4,
+                    "users": [
+                      "eye:left",
+                      "eye:right",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "service:recorder",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 4 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_depth",
+                    "kind": "shared_depth",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "tex.shared_history",
+                    "kind": "shared_history",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "other_users": [
+                      "eye:left",
+                      "stage:reprojector"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  },
+                  {
+                    "id": "ubo.shared_material",
+                    "kind": "shared_material",
+                    "shared": true,
+                    "generation": 1,
+                    "ref_count": 2,
+                    "users": [
+                      "eye:left",
+                      "eye:right"
+                    ],
+                    "other_users": [
+                      "eye:left"
+                    ],
+                    "reason": "shared resource retained: other holders keep 2 ref(s)"
+                  }
+                ],
+                "note": "rolled back only the failed eye attempt; shared pool and other users preserved"
+              }
+            }
+          ],
+          "fallback_frame": {
+            "frame": 4,
+            "kind": "failed_eye_placeholder",
+            "scope": "right_eye_failure",
+            "failed_eye": "right",
+            "left": {
+              "eye": "left",
+              "status": "rendered",
+              "success": true,
+              "placeholder": false,
+              "marker": "EYE-L-F4",
+              "checksum": "0aa43088d15d51bd4893d854f37c69ec6558cdbb4e094a14f212368d2018bd60",
+              "resource_id": "attach.L.f4",
+              "width": 16,
+              "height": 16
+            },
+            "right": {
+              "eye": "right",
+              "status": "placeholder",
+              "success": false,
+              "placeholder": true,
+              "marker": "PH-right",
+              "checksum": "488bb729e4d3646da008dcb4ab0233820781a39defc3bcd5a47d047eefd334a2",
+              "width": 16,
+              "height": 16,
+              "note": "declared placeholder after reprojection failure"
+            },
+            "composed_marker": "L[EYE-L-F4]|R[PH-right]",
+            "note": "healthy eye preserved; failed eye shows its declared placeholder"
+          }
+        },
+        {
+          "frame": 5,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F5",
+            "checksum": "18b0e06839e40ddc34daf3e48254540e13fa2aba6532758a6fc131eeaca48cd0",
+            "resource_id": "attach.L.f5",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F5",
+            "checksum": "58a12f42034795ebe02406f0ea2d3f532ef711fed3ae76932244de985c0a7dd8",
+            "resource_id": "attach.R.f5",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        }
+      ],
+      "pool_resources_after": [
+        {
+          "id": "img.placeholder.left",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.placeholder.right",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.shared_fallback",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "c7131ba00159e8db017603276fb7e19cccf1359a2929ca1b6aad777adfff2d4c",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_atlas",
+          "kind": "shared_texture",
+          "shared": true,
+          "generation": 1,
+          "width": 8,
+          "height": 8,
+          "checksum": "1a0e0ecf84382961a85aa8629e98aefcfeffdcf0fd74a6dd49d55d9706477ab2",
+          "state": "ready",
+          "ref_count": 4,
+          "users": [
+            "eye:left",
+            "eye:right",
+            "service:recorder",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1,
+            "service:recorder": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_depth",
+          "kind": "shared_depth",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_history",
+          "kind": "shared_history",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "ubo.shared_material",
+          "kind": "shared_material",
+          "shared": true,
+          "generation": 1,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        }
+      ],
+      "invariant_checks": [
+        {
+          "name": "all_three_fault_stages_recorded",
+          "ok": true,
+          "detail": "stages=map[attachment_creation:1 material_parameters:1 reprojection:1]"
+        },
+        {
+          "name": "only_injected_eye_uses_placeholder",
+          "ok": true,
+          "detail": "placeholder left=0 right=3"
+        },
+        {
+          "name": "other_eye_preserved_on_each_failure",
+          "ok": true,
+          "detail": "preserved real frames=3/3 for left eye"
+        },
+        {
+          "name": "placeholder_not_counted_as_success",
+          "ok": true,
+          "detail": "successful_eye_frames=7 (left=5 right=2), placeholders=3"
+        },
+        {
+          "name": "rollback_retains_shared_atlas_with_other_users",
+          "ok": true,
+          "detail": "atlas retained on all three rollbacks with opposite eye/reprojector/recorder"
+        },
+        {
+          "name": "whole_shared_set_survives",
+          "ok": true,
+          "detail": "atlas=true depth=true material=true history=true"
+        },
+        {
+          "name": "other_users_not_cleared",
+          "ok": true,
+          "detail": "atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]"
+        },
+        {
+          "name": "failed_eye_private_attachments_cleaned",
+          "ok": true,
+          "detail": "leftover attachments: "
+        },
+        {
+          "name": "scoped_failure_counts",
+          "ok": true,
+          "detail": "left=0 right=3"
+        }
+      ],
+      "clean": true
+    },
+    {
+      "id": "shared_texture_corruption",
+      "title": "Shared texture corruption handled separately",
+      "description": "The shared atlas is corrupted; it is quarantined and restored in place while all users and unrelated resources survive.",
+      "counters": {
+        "total_stereo_frames": 4,
+        "total_eye_surfaces": 8,
+        "successful_frames": 6,
+        "full_success_stereo_frames": 3,
+        "partial_stereo_frames": 0,
+        "placeholder_eye_frames": 0,
+        "shared_fallback_eye_frames": 2,
+        "shared_incident_frames": 1,
+        "left_eye_failures": 0,
+        "right_eye_failures": 0,
+        "shared_texture_corruptions": 1,
+        "eye_success_frames": {
+          "left": 3,
+          "right": 3
+        },
+        "eye_placeholder_frames": {},
+        "failures_by_stage": {},
+        "failures_by_fault": {}
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F1",
+            "checksum": "65b50a9887177edaee7d5ebc921ecb361eb8d0f04783ff3a9fefcbdd9c885d6c",
+            "resource_id": "attach.L.f1",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F1",
+            "checksum": "49f155b78e0a5e1deb6d7c05731a49d55d0b70f75c0f7aa4be8b0a305cf8261a",
+            "resource_id": "attach.R.f1",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        },
+        {
+          "frame": 2,
+          "left": {
+            "eye": "left",
+            "status": "shared_fallback",
+            "success": false,
+            "placeholder": false,
+            "marker": "PH-SHARED-TEXTURE-L",
+            "checksum": "2e33c01db7ad661a87ee59f09ef8ab6cdc536d8c3ca94347118b1fd45aa85feb",
+            "width": 16,
+            "height": 16,
+            "note": "shared texture checksum mismatch; presenting shared fallback for the in-flight frame"
+          },
+          "right": {
+            "eye": "right",
+            "status": "shared_fallback",
+            "success": false,
+            "placeholder": false,
+            "marker": "PH-SHARED-TEXTURE-R",
+            "checksum": "2e33c01db7ad661a87ee59f09ef8ab6cdc536d8c3ca94347118b1fd45aa85feb",
+            "width": 16,
+            "height": 16,
+            "note": "shared texture checksum mismatch; presenting shared fallback for the in-flight frame"
+          },
+          "full_success": false,
+          "fallback_frame": {
+            "frame": 2,
+            "kind": "shared_texture_fallback",
+            "scope": "shared_texture_corruption",
+            "left": {
+              "eye": "left",
+              "status": "shared_fallback",
+              "success": false,
+              "placeholder": false,
+              "marker": "PH-SHARED-TEXTURE-L",
+              "checksum": "2e33c01db7ad661a87ee59f09ef8ab6cdc536d8c3ca94347118b1fd45aa85feb",
+              "width": 16,
+              "height": 16,
+              "note": "shared texture checksum mismatch; presenting shared fallback for the in-flight frame"
+            },
+            "right": {
+              "eye": "right",
+              "status": "shared_fallback",
+              "success": false,
+              "placeholder": false,
+              "marker": "PH-SHARED-TEXTURE-R",
+              "checksum": "2e33c01db7ad661a87ee59f09ef8ab6cdc536d8c3ca94347118b1fd45aa85feb",
+              "width": 16,
+              "height": 16,
+              "note": "shared texture checksum mismatch; presenting shared fallback for the in-flight frame"
+            },
+            "composed_marker": "L[PH-SHARED-TEXTURE-L]|R[PH-SHARED-TEXTURE-R]",
+            "note": "shared texture unavailable; both eyes use the shared emergency image"
+          },
+          "shared_corruption": {
+            "frame": 2,
+            "scope": "shared_texture_corruption",
+            "resource_id": "tex.shared_atlas",
+            "old_generation": 1,
+            "expected_checksum": "1a0e0ecf84382961a85aa8629e98aefcfeffdcf0fd74a6dd49d55d9706477ab2",
+            "actual_checksum": "55ec3c695e37edb1946d59605815a975624a40f9d8e910ce6895961f4a1447b7",
+            "replacement_id": "tex.shared_atlas",
+            "new_generation": 2,
+            "affected_users": [
+              "eye:left",
+              "eye:right",
+              "service:recorder",
+              "stage:reprojector"
+            ],
+            "migrated_users": [
+              "eye:left",
+              "eye:right",
+              "service:recorder",
+              "stage:reprojector"
+            ],
+            "dropped_users": [],
+            "quarantined_resources": [
+              "tex.shared_atlas"
+            ],
+            "unaffected_resources": [
+              "img.placeholder.left",
+              "img.placeholder.right",
+              "img.shared_fallback",
+              "tex.shared_depth",
+              "tex.shared_history",
+              "ubo.shared_material"
+            ],
+            "note": "only the corrupt shared texture was quarantined and restored; all users retained"
+          }
+        },
+        {
+          "frame": 3,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F3",
+            "checksum": "c7d73ec5ad1098efe09187d863bbb144040afdaf078e18b314980c31c00c830f",
+            "resource_id": "attach.L.f3",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F3",
+            "checksum": "812f075ee1d6b2329bb1dbed1651425ec13e584d1a19fd90590d34de3d9201ba",
+            "resource_id": "attach.R.f3",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        },
+        {
+          "frame": 4,
+          "left": {
+            "eye": "left",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-L-F4",
+            "checksum": "0aa43088d15d51bd4893d854f37c69ec6558cdbb4e094a14f212368d2018bd60",
+            "resource_id": "attach.L.f4",
+            "width": 16,
+            "height": 16
+          },
+          "right": {
+            "eye": "right",
+            "status": "rendered",
+            "success": true,
+            "placeholder": false,
+            "marker": "EYE-R-F4",
+            "checksum": "f4bd4d81e6910e6c7e9f53ec271d376c6c67980b662f3994156e0232351cb1e7",
+            "resource_id": "attach.R.f4",
+            "width": 16,
+            "height": 16
+          },
+          "full_success": true
+        }
+      ],
+      "pool_resources_after": [
+        {
+          "id": "img.placeholder.left",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.placeholder.right",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "83e80fe9aa437f3a8640ac8cb97f6a548e4c58d7d63d1ca8e1062e099c848ee0",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "img.shared_fallback",
+          "kind": "fallback_image",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "c7131ba00159e8db017603276fb7e19cccf1359a2929ca1b6aad777adfff2d4c",
+          "state": "ready",
+          "ref_count": 1,
+          "users": [
+            "service:presenter"
+          ],
+          "holder_refs": {
+            "service:presenter": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_atlas",
+          "kind": "shared_texture",
+          "shared": true,
+          "generation": 2,
+          "width": 8,
+          "height": 8,
+          "checksum": "1a0e0ecf84382961a85aa8629e98aefcfeffdcf0fd74a6dd49d55d9706477ab2",
+          "state": "ready",
+          "ref_count": 4,
+          "users": [
+            "eye:left",
+            "eye:right",
+            "service:recorder",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1,
+            "service:recorder": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_depth",
+          "kind": "shared_depth",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "tex.shared_history",
+          "kind": "shared_history",
+          "shared": true,
+          "generation": 1,
+          "width": 16,
+          "height": 16,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "stage:reprojector"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "stage:reprojector": 1
+          },
+          "created_frame": 0
+        },
+        {
+          "id": "ubo.shared_material",
+          "kind": "shared_material",
+          "shared": true,
+          "generation": 1,
+          "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "state": "ready",
+          "ref_count": 2,
+          "users": [
+            "eye:left",
+            "eye:right"
+          ],
+          "holder_refs": {
+            "eye:left": 1,
+            "eye:right": 1
+          },
+          "created_frame": 0
+        }
+      ],
+      "invariant_checks": [
+        {
+          "name": "exactly_one_shared_corruption_record",
+          "ok": true,
+          "detail": "records=1"
+        },
+        {
+          "name": "shared_path_has_no_failed_eye",
+          "ok": true,
+          "detail": "scope=shared_texture_corruption"
+        },
+        {
+          "name": "all_users_retained_after_restore",
+          "ok": true,
+          "detail": "users=[eye:left eye:right service:recorder stage:reprojector] migrated=[eye:left eye:right service:recorder stage:reprojector] dropped=[]"
+        },
+        {
+          "name": "texture_generation_bumped",
+          "ok": true,
+          "detail": "gen 1 -\u003e 2"
+        },
+        {
+          "name": "unrelated_shared_resources_unchanged",
+          "ok": true,
+          "detail": "depth_gen=1 material_gen=1 history_gen=1"
+        },
+        {
+          "name": "shared_fallback_not_counted",
+          "ok": true,
+          "detail": "successful=6 shared_fallback_surfaces=2 full_frames=3"
+        },
+        {
+          "name": "frames_after_incident_recover",
+          "ok": true,
+          "detail": "frames 3 and 4 render both eyes"
+        },
+        {
+          "name": "pool_users_intact_after_run",
+          "ok": true,
+          "detail": "atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]"
+        }
+      ],
+      "clean": true
+    }
+  ],
+  "summary": {
+    "scenario_count": 3,
+    "all_invariants_hold": true,
+    "total_stereo_frames": 14,
+    "total_successful_frames": 20,
+    "total_placeholder_eye_frames": 6,
+    "total_shared_fallback_eye_frames": 2,
+    "left_eye_failures": 3,
+    "right_eye_failures": 3,
+    "shared_texture_corruptions": 1
+  }
+}

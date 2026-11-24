@@ -1,0 +1,56 @@
+Stereo single-eye rollback report  (go1.27.4, 2026-11-24T23:55:02Z)
+scenarios=3 all_invariants_hold=true
+
+=== left_eye_failure : Left-eye failure preserves the right eye ===
+Left eye hits attachment creation, material parameter and reprojection faults; right eye keeps rendering and shared resources survive.
+frames=5 successful_eye_frames=7 full_success=2 partial=3 placeholder=3 shared_fallback=0
+  f1  L=EYE-L-F1         R=EYE-R-F1        
+  f2  L=PH-left          R=EYE-R-F2         FAIL[attachment_creation/attachment_create_failed] retained=4 destroyed=1
+  f3  L=PH-left          R=EYE-R-F3         FAIL[material_parameters/material_parameter_error] retained=4 destroyed=1
+  f4  L=PH-left          R=EYE-R-F4         FAIL[reprojection/reprojection_timeout] retained=4 destroyed=1
+  f5  L=EYE-L-F5         R=EYE-R-F5        
+  [PASS] all_three_fault_stages_recorded — stages=map[attachment_creation:1 material_parameters:1 reprojection:1]
+  [PASS] only_injected_eye_uses_placeholder — placeholder left=3 right=0
+  [PASS] other_eye_preserved_on_each_failure — preserved real frames=3/3 for right eye
+  [PASS] placeholder_not_counted_as_success — successful_eye_frames=7 (left=2 right=5), placeholders=3
+  [PASS] rollback_retains_shared_atlas_with_other_users — atlas retained on all three rollbacks with opposite eye/reprojector/recorder
+  [PASS] whole_shared_set_survives — atlas=true depth=true material=true history=true
+  [PASS] other_users_not_cleared — atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]
+  [PASS] failed_eye_private_attachments_cleaned — leftover attachments: 
+  [PASS] scoped_failure_counts — left=3 right=0
+
+=== right_eye_failure : Right-eye failure preserves the left eye ===
+Right eye hits attachment creation, material parameter and reprojection faults; left eye keeps rendering and shared resources survive.
+frames=5 successful_eye_frames=7 full_success=2 partial=3 placeholder=3 shared_fallback=0
+  f1  L=EYE-L-F1         R=EYE-R-F1        
+  f2  L=EYE-L-F2         R=PH-right         FAIL[attachment_creation/attachment_create_failed] retained=4 destroyed=1
+  f3  L=EYE-L-F3         R=PH-right         FAIL[material_parameters/material_parameter_error] retained=4 destroyed=1
+  f4  L=EYE-L-F4         R=PH-right         FAIL[reprojection/reprojection_timeout] retained=4 destroyed=1
+  f5  L=EYE-L-F5         R=EYE-R-F5        
+  [PASS] all_three_fault_stages_recorded — stages=map[attachment_creation:1 material_parameters:1 reprojection:1]
+  [PASS] only_injected_eye_uses_placeholder — placeholder left=0 right=3
+  [PASS] other_eye_preserved_on_each_failure — preserved real frames=3/3 for left eye
+  [PASS] placeholder_not_counted_as_success — successful_eye_frames=7 (left=5 right=2), placeholders=3
+  [PASS] rollback_retains_shared_atlas_with_other_users — atlas retained on all three rollbacks with opposite eye/reprojector/recorder
+  [PASS] whole_shared_set_survives — atlas=true depth=true material=true history=true
+  [PASS] other_users_not_cleared — atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]
+  [PASS] failed_eye_private_attachments_cleaned — leftover attachments: 
+  [PASS] scoped_failure_counts — left=0 right=3
+
+=== shared_texture_corruption : Shared texture corruption handled separately ===
+The shared atlas is corrupted; it is quarantined and restored in place while all users and unrelated resources survive.
+frames=4 successful_eye_frames=6 full_success=3 partial=0 placeholder=0 shared_fallback=2
+  f1  L=EYE-L-F1         R=EYE-R-F1        
+  f2  L=PH-SHARED-TEXTURE-L R=PH-SHARED-TEXTURE-R SHARED-CORRUPT gen->2 users=4
+  f3  L=EYE-L-F3         R=EYE-R-F3        
+  f4  L=EYE-L-F4         R=EYE-R-F4        
+  [PASS] exactly_one_shared_corruption_record — records=1
+  [PASS] shared_path_has_no_failed_eye — scope=shared_texture_corruption
+  [PASS] all_users_retained_after_restore — users=[eye:left eye:right service:recorder stage:reprojector] migrated=[eye:left eye:right service:recorder stage:reprojector] dropped=[]
+  [PASS] texture_generation_bumped — gen 1 -> 2
+  [PASS] unrelated_shared_resources_unchanged — depth_gen=1 material_gen=1 history_gen=1
+  [PASS] shared_fallback_not_counted — successful=6 shared_fallback_surfaces=2 full_frames=3
+  [PASS] frames_after_incident_recover — frames 3 and 4 render both eyes
+  [PASS] pool_users_intact_after_run — atlas ref_count=4 users=[eye:left eye:right service:recorder stage:reprojector]
+
+SUMMARY frames=14 successful_eye_frames=20 placeholders=6 shared_fallback=2 L_fail=3 R_fail=3 shared_corrupt=1 clean=true
