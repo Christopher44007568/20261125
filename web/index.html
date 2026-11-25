@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Dither Lab / 8-bit 暗部渐变</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="hero">
+      <div class="topline">
+        <a class="brand" href="#top" aria-label="Dither Lab">
+          <span class="brand-mark">8<span>b</span></span>
+          <span class="brand-type">RASTER ORDER<em>dither study</em></span>
+        </a>
+        <div class="top-meta">
+          <span>DISPLAY / SRGB</span>
+          <span class="live"><i></i>8-BIT OUTPUT</span>
+        </div>
+      </div>
+      <div class="hero-grid" id="top">
+        <div>
+          <p class="eyebrow">LOW-LIGHT GRADIENT / STUDY 001</p>
+          <h1>暗部渐变<span>抖动实验</span></h1>
+        </div>
+        <p class="lede">同一组高精度渐变，三种 8-bit 量化策略。先看宏观色带，再放大到像素：有序抖动的规则簇与误差扩散的有机颗粒，应该清楚可辨；纯色区域则必须保持安静。</p>
+      </div>
+      <div class="spec-strip">
+        <span><b>8</b> bit / channel</span>
+        <span>sRGB display codes</span>
+        <span>3 ramps × 3 quantizers</span>
+        <span class="guard"><i></i>FLAT GUARD ON</span>
+      </div>
+    </header>
+
+    <nav class="scene-tabs" aria-label="选择测试渐变">
+      <button class="scene-tab is-active" data-scene="gray" aria-selected="true">
+        <span class="tab-index">01</span>
+        <span class="tab-copy"><b>灰阶</b><small>NEUTRAL RAMP</small></span>
+        <span class="tab-preview preview-gray" aria-hidden="true"></span>
+      </button>
+      <button class="scene-tab" data-scene="skin" aria-selected="false">
+        <span class="tab-index">02</span>
+        <span class="tab-copy"><b>肤色</b><small>DEEP SKIN TONE</small></span>
+        <span class="tab-preview preview-skin" aria-hidden="true"></span>
+      </button>
+      <button class="scene-tab" data-scene="chroma" aria-selected="false">
+        <span class="tab-index">03</span>
+        <span class="tab-copy"><b>低亮度彩色</b><small>LOW-LIGHT CHROMA</small></span>
+        <span class="tab-preview preview-chroma" aria-hidden="true"></span>
+      </button>
+    </nav>
+
+    <section class="compare" aria-labelledby="compare-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 / COMPARISON</p>
+          <h2 id="compare-title">量化方式对照</h2>
+        </div>
+        <p class="hint"><span class="hint-ring"></span>点击任意画面取样，下方同步放大</p>
+      </div>
+
+      <div class="matrix">
+        <div class="matrix-head">
+          <div class="input-label"><span>测试图</span><small>INPUT RAMP</small></div>
+          <div class="method-head">
+            <span class="method-letter">A</span>
+            <span><b>无抖动</b><small>DIRECT ROUND</small></span>
+            <em>8-bit</em>
+          </div>
+          <div class="method-head">
+            <span class="method-letter">B</span>
+            <span><b>有序抖动</b><small>BAYER 8×8</small></span>
+            <em>+T</em>
+          </div>
+          <div class="method-head">
+            <span class="method-letter">C</span>
+            <span><b>误差扩散</b><small>FLOYD–STEINBERG · SERPENTINE</small></span>
+            <em>7/16</em>
+          </div>
+        </div>
+
+        <div class="matrix-row" data-scene-row="gray">
+          <div class="row-info">
+            <span class="row-index">01</span>
+            <h3>灰阶</h3>
+            <p>中性暗部，最容易读出阶梯。</p>
+            <span class="range">L 2—38</span>
+          </div>
+          <button class="cell" data-scene="gray" data-mode="none" aria-label="灰阶无抖动">
+            <img src="images/gray_none.png" alt="灰阶无抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="gray" data-mode="ordered" aria-label="灰阶有序抖动">
+            <img src="images/gray_ordered.png" alt="灰阶 Bayer 有序抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="gray" data-mode="diffusion" aria-label="灰阶误差扩散">
+            <img src="images/gray_diffusion.png" alt="灰阶 Floyd–Steinberg 误差扩散渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="matrix-row" data-scene-row="skin">
+          <div class="row-info">
+            <span class="row-index">02</span>
+            <h3>肤色</h3>
+            <p>通道斜率不同，轮廓相互错位。</p>
+            <span class="range">R 9—87</span>
+          </div>
+          <button class="cell" data-scene="skin" data-mode="none" aria-label="肤色无抖动">
+            <img src="images/skin_none.png" alt="肤色无抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="skin" data-mode="ordered" aria-label="肤色有序抖动">
+            <img src="images/skin_ordered.png" alt="肤色 Bayer 有序抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="skin" data-mode="diffusion" aria-label="肤色误差扩散">
+            <img src="images/skin_diffusion.png" alt="肤色 Floyd–Steinberg 误差扩散渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="matrix-row" data-scene-row="chroma">
+          <div class="row-info">
+            <span class="row-index">03</span>
+            <h3>低亮度彩色</h3>
+            <p>青绿到暗玫瑰，低色阶处现形。</p>
+            <span class="range">RGB 2—42</span>
+          </div>
+          <button class="cell" data-scene="chroma" data-mode="none" aria-label="低亮度彩色无抖动">
+            <img src="images/chroma_none.png" alt="低亮度彩色无抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="chroma" data-mode="ordered" aria-label="低亮度彩色有序抖动">
+            <img src="images/chroma_ordered.png" alt="低亮度彩色 Bayer 有序抖动渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+          <button class="cell" data-scene="chroma" data-mode="diffusion" aria-label="低亮度彩色误差扩散">
+            <img src="images/chroma_diffusion.png" alt="低亮度彩色 Floyd–Steinberg 误差扩散渐变" draggable="false">
+            <span class="flat-boundary" aria-hidden="true"></span><span class="probe" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="loupe-panel" aria-labelledby="loupe-title">
+      <div class="loupe-head">
+        <div>
+          <p class="eyebrow">02 / MAGNIFICATION</p>
+          <h2 id="loupe-title">像素检视 <em id="loupe-scene">灰阶</em></h2>
+        </div>
+        <div class="loupe-tools">
+          <div class="segmented" aria-label="取样区域">
+            <button data-region="gradient" class="is-active">渐变区</button>
+            <button data-region="flat">平坦区</button>
+          </div>
+          <div class="segmented" aria-label="放大镜视图">
+            <button data-view="raw">原始</button>
+            <button data-view="enhanced" class="is-active">噪声 ×8</button>
+          </div>
+          <div class="zoom-control" aria-label="放大倍率">
+            <span>ZOOM</span>
+            <button data-zoom="5">5×</button>
+            <button data-zoom="8">8×</button>
+            <button data-zoom="10" class="is-active">10×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="loupe-grid">
+        <figure class="loupe-card" data-mode="none">
+          <div class="loupe-top">
+            <span class="method-letter">A</span>
+            <span><b>无抖动</b><small>DIRECT ROUND</small></span>
+            <output class="sigma" id="sigma-none">σ 0.00</output>
+          </div>
+          <div class="canvas-shell"><canvas id="canvas-none" width="480" height="200"></canvas></div>
+          <figcaption><span id="range-none">L 25—26</span><span class="view-label">Δ ×8</span></figcaption>
+        </figure>
+        <figure class="loupe-card" data-mode="ordered">
+          <div class="loupe-top">
+            <span class="method-letter">B</span>
+            <span><b>有序抖动</b><small>BAYER 8×8</small></span>
+            <output class="sigma" id="sigma-ordered">σ 0.00</output>
+          </div>
+          <div class="canvas-shell"><canvas id="canvas-ordered" width="480" height="200"></canvas></div>
+          <figcaption><span id="range-ordered">L 25—26</span><span class="view-label">Δ ×8</span></figcaption>
+        </figure>
+        <figure class="loupe-card" data-mode="diffusion">
+          <div class="loupe-top">
+            <span class="method-letter">C</span>
+            <span><b>误差扩散</b><small>FLOYD–STEINBERG · SERPENTINE</small></span>
+            <output class="sigma" id="sigma-diffusion">σ 0.00</output>
+          </div>
+          <div class="canvas-shell"><canvas id="canvas-diffusion" width="480" height="200"></canvas></div>
+          <figcaption><span id="range-diffusion">L 25—26</span><span class="view-label">Δ ×8</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="loupe-foot">
+        <div class="sample-readout">
+          <span class="hint-ring"></span>
+          <span id="crop-info">x 465—513 / y 100—120</span>
+          <span class="flat-state" id="flat-state">GRADIENT / ACTIVE</span>
+        </div>
+        <label class="position-control">
+          <span>采样位置</span>
+          <input type="range" id="position-slider" min="0" max="100" value="68">
+          <output id="position-value">68%</output>
+        </label>
+      </div>
+      <p class="loupe-note">每张图顶部 40 px 是平坦参照区：量化误差必须为 0，不能出现 Bayer 网格或扩散颗粒。切到“平坦区”可验证这一点。“噪声 ×8”仅增强相对局部均值的偏差，不改变源 PNG。</p>
+    </section>
+
+    <footer class="footer">
+      <span>DITHER LAB / GO STANDARD LIBRARY</span>
+      <span>720 × 196 px source · nearest-neighbor loupe</span>
+      <span>暗部不是黑，是信息密度最低的地方。</span>
+    </footer>
+  </main>
+  <script src="assets.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
