@@ -1,0 +1,14 @@
+{
+  "strands": 680,
+  "segmentsPerStrand": 24,
+  "cards": 10,
+  "flyawayTotal": 100,
+  "flyawayLost": 4,
+  "flyawayRetained": 96,
+  "silhouetteIOU": 0.4419,
+  "highlightRetention": 0.8119,
+  "meanCardDistance": 2.1635,
+  "maxCardDistance": 8.6055,
+  "lostFlyawayIDs": [42 464 526 578],
+  "atlas": {"size": 1024, "cols": 2, "rows": 5, "padding": 10}
+}
