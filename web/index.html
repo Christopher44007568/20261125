@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b0e">
+  <title>MESHSCOPE — 零件网格特征识别</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="MESHSCOPE home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32">
+            <path d="M4 9.5 16 3l12 6.5v13L16 29 4 22.5z"/>
+            <path d="M4 9.5 16 16l12-6.5M16 16v13"/>
+            <circle cx="16" cy="16" r="2.2"/>
+          </svg>
+        </span>
+        <span class="brand-word">MESH<span>SCOPE</span></span>
+      </a>
+      <div class="topnav">
+        <button class="topnav-item active">FEATURE INSPECT</button>
+        <button class="topnav-item">MESH LAB</button>
+        <button class="topnav-item">REPORTS</button>
+      </div>
+      <div class="topbar-meta">
+        <span class="run-label">RUN <b>0x7F21</b></span>
+        <span class="engine-status"><i></i>LOCAL SOLVER</span>
+        <button class="icon-btn" title="帮助">?</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="case-panel">
+        <div class="rail-heading">
+          <span>CASE INDEX</span>
+          <span class="rail-count">03</span>
+        </div>
+        <div id="caseList" class="case-list" aria-label="故障样件"></div>
+        <div class="rail-legend">
+          <div class="rail-legend-title">SOLVER STACK</div>
+          <div class="solver-step"><span>01</span><b>局部曲率</b><em>LOCAL CURV</em></div>
+          <div class="solver-step"><span>02</span><b>基元拟合</b><em>PRIMITIVE LSQ</em></div>
+          <div class="solver-step"><span>03</span><b>区域分割</b><em>REGION MERGE</em></div>
+          <div class="solver-step"><span>04</span><b>边界置信</b><em>BOUNDARY CONF</em></div>
+        </div>
+        <div class="rail-footer">
+          <span>MESHSCOPE v0.9</span>
+          <span>GO / STDLIB</span>
+        </div>
+      </aside>
+
+      <section class="stage">
+        <header class="stage-header">
+          <div class="stage-title-block">
+            <div class="eyebrow">
+              <span id="stageCode">F-01 · SIDE MILL</span>
+              <span class="eyebrow-sep"></span>
+              <span id="stageSeverity" class="severity-text">REVIEW</span>
+            </div>
+            <h1>
+              <span class="stage-index" id="stageIndex">01</span>
+              <span id="stageTitle">Adjacent Fillet Chain</span>
+            </h1>
+            <p id="stageSubtitle">G1-tangent ogee / 相切双圆角</p>
+          </div>
+          <div class="view-modes" role="tablist" aria-label="渲染模式">
+            <button class="mode-btn active" data-mode="class" role="tab" aria-selected="true">分类叠加</button>
+            <button class="mode-btn" data-mode="audit" role="tab" aria-selected="false">几何审计</button>
+            <button class="mode-btn split" data-mode="split" role="tab" aria-selected="false">
+              <span class="split-glyph" aria-hidden="true"></span>分屏
+            </button>
+          </div>
+        </header>
+
+        <div class="viewport" id="viewport">
+          <canvas id="sceneCanvas"></canvas>
+          <div class="viewport-vignette" aria-hidden="true"></div>
+          <div class="viewport-grid" aria-hidden="true"></div>
+          <div class="scan-axis" aria-hidden="true"></div>
+
+          <div class="viewport-meta">
+            <span>SOLID SURFACE</span>
+            <span class="meta-dot"></span>
+            <span id="viewTriangleCount">0000 TRI</span>
+            <span class="meta-dot"></span>
+            <span>PERSPECTIVE</span>
+          </div>
+          <div class="render-mode-chip" id="renderModeChip">CLASSIFICATION</div>
+
+          <div class="callout-layer" id="calloutLayer"></div>
+
+          <div class="viewport-tools">
+            <button class="tool-btn" id="resetView" title="重置视角" aria-label="重置视角">
+              <svg viewBox="0 0 20 20"><path d="M4 7a7 7 0 1 1-1 5"/><path d="M4 2v5h5"/></svg>
+            </button>
+            <button class="tool-btn active" id="toggleBounds" title="显示分类边界" aria-label="显示分类边界">
+              <svg viewBox="0 0 20 20"><path d="M3 5h14v10H3z"/><path d="M6 8h8M6 12h5"/></svg>
+            </button>
+            <button class="tool-btn" id="toggleRotate" title="自动旋转" aria-label="自动旋转">
+              <svg viewBox="0 0 20 20"><path d="M3 10a7 7 0 0 1 12-4.9"/><path d="M15 2v4h-4"/><path d="M17 10a7 7 0 0 1-12 4.9"/><path d="M5 18v-4h4"/></svg>
+            </button>
+          </div>
+
+          <div class="legend" id="viewportLegend" aria-label="特征颜色图例"></div>
+          <div class="camera-readout">
+            <span>AZ <b id="azReadout">037°</b></span>
+            <span>EL <b id="elReadout">025°</b></span>
+          </div>
+          <div class="orbit-hint"><span>DRAG</span> ORBIT · <span>SCROLL</span> ZOOM</div>
+          <div class="loading-card" id="loadingCard">
+            <span class="loader"></span>
+            <span>正在拟合基元…</span>
+          </div>
+          <div class="error-card" id="errorCard" hidden></div>
+        </div>
+
+        <footer class="stage-footer">
+          <div class="footer-stat"><span>边界置信</span><b id="footerBoundary">0.00</b></div>
+          <div class="footer-stat"><span>几何残差</span><b id="footerError">0.000 mm</b></div>
+          <div class="footer-stat"><span>识别区域</span><b id="footerRegions">00</b></div>
+          <div class="footer-hint"><i></i> 高亮保留实体明暗，不替换几何</div>
+        </footer>
+      </section>
+
+      <aside class="inspector">
+        <div class="inspector-scroll">
+          <section class="case-summary">
+            <div class="summary-topline">
+              <span id="inspectorCode">F-01 · SIDE MILL</span>
+              <span id="severityChip" class="severity-chip">REVIEW</span>
+            </div>
+            <h2 id="inspectorTitle">邻接圆角链</h2>
+            <p id="inspectorDescription">—</p>
+          </section>
+
+          <section class="panel-section confidence-section">
+            <div class="section-heading">
+              <span>分类置信度</span>
+              <span class="heading-meta">AREA WEIGHTED</span>
+            </div>
+            <div class="confidence-overview">
+              <div class="confidence-ring" id="confidenceRing" style="--value:0">
+                <div class="confidence-ring-inner">
+                  <b id="meanConfidence">0.00</b>
+                  <small>MEAN</small>
+                </div>
+              </div>
+              <div class="confidence-copy">
+                <div><span>边界均值</span><b id="boundaryConfidence">0.00</b></div>
+                <div><span>最低边界</span><b id="lowBoundaryConfidence">0.00</b></div>
+                <div><span>识别区域</span><b id="regionCount">0</b></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-heading">
+              <span>特征构成</span>
+              <span class="heading-meta" id="triangleSummary">0 FACETS</span>
+            </div>
+            <div id="featureRows" class="feature-rows"></div>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-heading">
+              <span>边界判定</span>
+              <span class="heading-meta" id="boundaryCount">0 SEGMENTS</span>
+            </div>
+            <div id="boundaryRows" class="boundary-rows"></div>
+            <div class="boundary-scale">
+              <span>LOW</span>
+              <i></i>
+              <span>HIGH</span>
+              <em>边界线颜色 = 置信度</em>
+            </div>
+          </section>
+
+          <section class="panel-section geometry-section">
+            <div class="section-heading">
+              <span>几何完整性</span>
+              <button class="audit-link" id="auditShortcut">OPEN AUDIT ↗</button>
+            </div>
+            <div class="geometry-metrics">
+              <div><span>RMS 形貌偏差</span><b id="rmsError">0.000<em> mm</em></b></div>
+              <div><span>最大偏差</span><b id="maxError">0.000<em> mm</em></b></div>
+            </div>
+            <div class="error-spectrum" aria-label="误差范围">
+              <span class="spectrum-label">−</span>
+              <div class="spectrum-track"><i id="errorMarker"></i></div>
+              <span class="spectrum-label">+</span>
+            </div>
+            <div class="spectrum-legend"><span>COOL / LOSS</span><span>NOMINAL</span><span>WARM / EXCESS</span></div>
+            <p class="geometry-note" id="auditNote">—</p>
+          </section>
+
+          <section class="panel-section findings-section">
+            <div class="section-heading"><span>检测摘要</span><span class="heading-meta">SOLVER NOTES</span></div>
+            <div id="findingRows" class="finding-rows"></div>
+          </section>
+
+          <section class="panel-section controls-section">
+            <div class="section-heading"><span>叠层控制</span><span class="heading-meta">DISPLAY</span></div>
+            <label class="slider-row">
+              <span>分类覆盖强度</span>
+              <b id="overlayValue">72%</b>
+              <input id="overlaySlider" type="range" min="0" max="100" value="72">
+            </label>
+            <div class="toggle-row">
+              <span>置信度边界</span>
+              <button class="switch active" id="boundarySwitch" role="switch" aria-checked="true"><i></i></button>
+            </div>
+            <div class="toggle-row">
+              <span>误差等值线</span>
+              <button class="switch active" id="contourSwitch" role="switch" aria-checked="true"><i></i></button>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
