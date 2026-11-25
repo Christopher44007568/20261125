@@ -1,0 +1,15 @@
+metric,count,min,mean,p95,max,worst_case,worst_eye,got,want,error
+culling_bool,12,0.000e+00,0.000e+00,0.000e+00,0.000e+00,culling_farther_than_far,eye1,1.000000000,1.000000000,0.000e+00
+depth_01,24,0.000e+00,0.000e+00,0.000e+00,0.000e+00,known_pose_center_depth_18,eye1,1.000000000,1.000000000,0.000e+00
+pose_depth_01,16,0.000e+00,0.000e+00,0.000e+00,0.000e+00,pose_error_center_depth_18,eye1,1.000000000,1.000000000,0.000e+00
+pose_screen_x_px,16,0.000e+00,0.000e+00,0.000e+00,0.000e+00,pose_error_center_depth_18,eye1,529.230769231,529.230769231,0.000e+00
+pose_screen_y_px,16,0.000e+00,0.000e+00,0.000e+00,0.000e+00,pose_error_center_depth_18,eye1,345.000000000,345.000000000,0.000e+00
+screen_x_px,24,0.000e+00,0.000e+00,0.000e+00,0.000e+00,known_pose_center_depth_18,eye1,529.230769231,529.230769231,0.000e+00
+screen_y_px,24,0.000e+00,0.000e+00,0.000e+00,0.000e+00,known_pose_center_depth_18,eye1,345.000000000,345.000000000,0.000e+00
+theoretical_horizontal_disparity_px,20,0.000e+00,0.000e+00,0.000e+00,0.000e+00,disparity_depth_18,eye2,348.991452991,348.991452991,0.000e+00
+unproject_eye_x_m,24,0.000e+00,5.991e-16,3.553e-15,3.553e-15,shared_known_pose_near_corner_ba,eye1,11.520000000,11.520000000,3.553e-15
+unproject_eye_y_m,24,0.000e+00,1.515e-16,8.882e-16,8.882e-16,shared_known_pose_near_corner_bb,eye1,6.120000000,6.120000000,8.882e-16
+unproject_eye_z_m,24,0.000e+00,0.000e+00,0.000e+00,0.000e+00,known_pose_center_depth_18,eye1,-0.250000000,-0.250000000,0.000e+00
+unproject_world_x_m,24,0.000e+00,5.956e-16,3.553e-15,3.553e-15,shared_known_pose_near_corner_bb,eye1,11.677000000,11.677000000,3.553e-15
+unproject_world_y_m,24,0.000e+00,2.267e-16,1.776e-15,1.776e-15,shared_known_pose_near_corner_ba,eye0,-8.170000000,-8.170000000,1.776e-15
+unproject_world_z_m,24,0.000e+00,0.000e+00,0.000e+00,0.000e+00,known_pose_center_depth_18,eye1,1.750000000,1.750000000,0.000e+00
