@@ -1,0 +1,51 @@
+colorlab conversion report
+==========================
+chart: 11 neutral gray steps, 11 primary/secondary bars, 11 skin tones
+band 1: chart in source space; band 2: forward result; band 3: round trip
+
+images:
+  out/reference_srgb.ppm
+  out/encoded_srgb.ppm
+  out/encoded_rec2020.ppm
+  out/encoded_pq.ppm
+  out/encoded_hlg.ppm
+
+round-trip chains:
+  sRGB -> Rec.2020 -> sRGB: peak=7.17204074e-15 (8-bit=1), samples=33
+    out/chain_srgb_to_rec2020_to_srgb.ppm
+  Rec.2020 -> sRGB -> Rec.2020: peak=4.4408921e-16 (8-bit=0), samples=33
+    out/chain_rec2020_to_srgb_to_rec2020.ppm
+  sRGB -> PQ -> sRGB: peak=9.86872806e-13 (8-bit=1), samples=33
+    out/chain_srgb_to_pq_to_srgb.ppm
+  PQ -> sRGB -> PQ: peak=1.74305015e-14 (8-bit=0), samples=33
+    out/chain_pq_to_srgb_to_pq.ppm
+  sRGB -> HLG -> sRGB: peak=4.12392342e-15 (8-bit=1), samples=33
+    out/chain_srgb_to_hlg_to_srgb.ppm
+  HLG -> sRGB -> HLG: peak=1.11022302e-16 (8-bit=0), samples=33
+    out/chain_hlg_to_srgb_to_hlg.ppm
+  Rec.2020 -> PQ -> Rec.2020: peak=4.72955008e-14 (8-bit=0), samples=33
+    out/chain_rec2020_to_pq_to_rec2020.ppm
+  PQ -> Rec.2020 -> PQ: peak=1.75415238e-14 (8-bit=0), samples=33
+    out/chain_pq_to_rec2020_to_pq.ppm
+  Rec.2020 -> HLG -> Rec.2020: peak=4.4408921e-16 (8-bit=0), samples=33
+    out/chain_rec2020_to_hlg_to_rec2020.ppm
+  HLG -> Rec.2020 -> HLG: peak=2.77555756e-16 (8-bit=0), samples=33
+    out/chain_hlg_to_rec2020_to_hlg.ppm
+  PQ -> HLG -> PQ: peak=1.75415238e-14 (8-bit=0), samples=33
+    out/chain_pq_to_hlg_to_pq.ppm
+  HLG -> PQ -> HLG: peak=3.90798505e-14 (8-bit=0), samples=33
+    out/chain_hlg_to_pq_to_hlg.ppm
+
+max peak error: 9.86872806e-13, limit 1e-09
+
+transfer monotonicity on [0,1], including boundaries (tol 1e-12):
+  sRGB decode      monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+  sRGB encode      monotonic=true  endpoints=(true,true) max_backtrack=6.939e-18 samples=65554
+  Rec.2020 decode  monotonic=true  endpoints=(true,true) max_backtrack=5.239e-16 samples=65554
+  Rec.2020 encode  monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+  PQ decode        monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+  PQ encode        monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+  HLG decode       monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+  HLG encode       monotonic=true  endpoints=(true,true) max_backtrack=0.000e+00 samples=65554
+
+result: PASS
