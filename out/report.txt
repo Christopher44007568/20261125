@@ -1,0 +1,5 @@
+groom compression report
+strands=1400 points=16 chunks=16
+ORIGINAL               vram=262.5KB   rootDev=0.000000 tipDev=0.000000 rmse=0.0000 maxErr=0.0000 silhouetteXOR=0px missingChunks=[] fallbackStrands=0
+COMPRESSED             vram=166.2KB   rootDev=0.000000 tipDev=0.000000 rmse=0.0012 maxErr=0.0034 silhouetteXOR=19834px missingChunks=[3 9 14] fallbackStrands=18
+LOW-LOD                vram=89.6KB    rootDev=0.000000 tipDev=0.000000 rmse=0.0547 maxErr=0.1900 silhouetteXOR=44330px missingChunks=[3 9 14] fallbackStrands=18
