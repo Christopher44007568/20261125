@@ -1,0 +1,174 @@
+package spectralresample
+
+import "math"
+
+// XYZToLinearSRGB transforms CIE XYZ (Y normalised to 100) into linear sRGB
+// primaries using the standard sRGB D65 matrix.
+func XYZToLinearSRGB(xyz [3]float64) [3]float64 {
+	x, y, z := xyz[0]/100, xyz[1]/100, xyz[2]/100
+	return [3]float64{
+		3.2406*x - 1.5372*y - 0.4986*z,
+		-0.9689*x + 1.8758*y + 0.0415*z,
+		0.0557*x - 0.2040*y + 1.0570*z,
+	}
+}
+
+// EncodeSRGB applies the sRGB opto-electronic transfer function.
+func EncodeSRGB(linear float64) float64 {
+	if linear <= 0.0031308 {
+		return 12.92 * linear
+	}
+	return 1.055*math.Pow(linear, 1/2.4) - 0.055
+}
+
+// SRGB8 quantises linear sRGB into display-referred 8-bit values, clamping
+// out-of-gamut components instead of silently wrapping.
+func SRGB8(linear [3]float64) [3]int {
+	var out [3]int
+	for i, value := range linear {
+		encoded := EncodeSRGB(value)
+		out[i] = int(math.Round(Clamp01(encoded) * 255))
+	}
+	return out
+}
+
+func labF(t float64) float64 {
+	const epsilon = 216.0 / 24389.0
+	const kappa = 24389.0 / 27.0
+	if t > epsilon {
+		return math.Cbrt(t)
+	}
+	return (kappa*t + 16) / 116
+}
+
+// XYZToLab converts XYZ into CIE L*a*b* relative to the given white point
+// (Y normalised to 100).
+func XYZToLab(xyz, white [3]float64) [3]float64 {
+	fx := labF(xyz[0] / white[0])
+	fy := labF(xyz[1] / white[1])
+	fz := labF(xyz[2] / white[2])
+	return [3]float64{
+		116*fy - 16,
+		500 * (fx - fy),
+		200 * (fy - fz),
+	}
+}
+
+// bradford is the Bradford cone response matrix (IEC 61966-2-1).
+var bradford = [3][3]float64{
+	{0.8951, 0.2664, -0.1614},
+	{-0.7502, 1.7135, 0.0367},
+	{0.0389, -0.0685, 1.0296},
+}
+
+var bradfordInverse = [3][3]float64{
+	{0.9869929, -0.1470543, 0.1599627},
+	{0.4323053, 0.5183603, 0.0492912},
+	{-0.0085287, 0.0400428, 0.9684867},
+}
+
+func matVec(m [3][3]float64, v [3]float64) [3]float64 {
+	var out [3]float64
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			out[i] += m[i][j] * v[j]
+		}
+	}
+	return out
+}
+
+// ChromaticAdaptation performs a Bradford von Kries transform of XYZ from a
+// source white point to a destination white point, both with Y = 100.
+func ChromaticAdaptation(xyz, srcWhite, dstWhite [3]float64) [3]float64 {
+	srcCone := matVec(bradford, srcWhite)
+	dstCone := matVec(bradford, dstWhite)
+	var scale [3]float64
+	for i := range scale {
+		scale[i] = dstCone[i] / srcCone[i]
+	}
+	cone := matVec(bradford, xyz)
+	for i := range cone {
+		cone[i] *= scale[i]
+	}
+	return matVec(bradfordInverse, cone)
+}
+
+// DeltaE2000 returns the CIEDE2000 colour difference (Sharma et al. 2005,
+// including the published correction terms).
+func DeltaE2000(lab1, lab2 [3]float64) float64 {
+	l1, a1, b1 := lab1[0], lab1[1], lab1[2]
+	l2, a2, b2 := lab2[0], lab2[1], lab2[2]
+
+	c1 := math.Hypot(a1, b1)
+	c2 := math.Hypot(a2, b2)
+	cBar := (c1 + c2) / 2
+	cBar7 := math.Pow(cBar, 7)
+	g := 0.5 * (1 - math.Sqrt(cBar7/(cBar7+math.Pow(25, 7))))
+	a1p := (1 + g) * a1
+	a2p := (1 + g) * a2
+	c1p := math.Hypot(a1p, b1)
+	c2p := math.Hypot(a2p, b2)
+	h1p := hueAngle(a1p, b1)
+	h2p := hueAngle(a2p, b2)
+
+	dLp := l2 - l1
+	dCp := c2p - c1p
+	var dHp float64
+	switch {
+	case c1p*c2p == 0:
+		dHp = 0
+	case math.Abs(h2p-h1p) <= 180:
+		dHp = h2p - h1p
+	case h2p-h1p > 180:
+		dHp = h2p - h1p - 360
+	default:
+		dHp = h2p - h1p + 360
+	}
+	dHp = 2 * math.Sqrt(c1p*c2p) * math.Sin(dHp*math.Pi/360)
+
+	lBarp := (l1 + l2) / 2
+	cBarp := (c1p + c2p) / 2
+	var hBarp float64
+	switch {
+	case c1p*c2p == 0:
+		hBarp = h1p + h2p
+	case math.Abs(h1p-h2p) <= 180:
+		hBarp = (h1p + h2p) / 2
+	case h1p+h2p < 360:
+		hBarp = (h1p + h2p + 360) / 2
+	default:
+		hBarp = (h1p + h2p - 360) / 2
+	}
+
+	t := 1 - 0.17*math.Cos(radians(hBarp-30)) +
+		0.24*math.Cos(radians(2*hBarp)) +
+		0.32*math.Cos(radians(3*hBarp+6)) -
+		0.20*math.Cos(radians(4*hBarp-63))
+	deltaTheta := 30 * math.Exp(-math.Pow((hBarp-275)/25, 2))
+	cBarp7 := math.Pow(cBarp, 7)
+	rc := 2 * math.Sqrt(cBarp7/(cBarp7+math.Pow(25, 7)))
+	sl := 1 + (0.015*math.Pow(lBarp-50, 2))/math.Sqrt(20+math.Pow(lBarp-50, 2))
+	sc := 1 + 0.045*cBarp
+	sh := 1 + 0.015*cBarp*t
+	rt := -math.Sin(radians(2*deltaTheta)) * rc
+
+	kl, kc, kh := 1.0, 1.0, 1.0
+	termL := dLp / (kl * sl)
+	termC := dCp / (kc * sc)
+	termH := dHp / (kh * sh)
+	return math.Sqrt(termL*termL + termC*termC + termH*termH + rt*termC*termH)
+}
+
+func hueAngle(a, b float64) float64 {
+	if a == 0 && b == 0 {
+		return 0
+	}
+	h := degrees(math.Atan2(b, a))
+	if h < 0 {
+		h += 360
+	}
+	return h
+}
+
+func radians(deg float64) float64 { return deg * math.Pi / 180 }
+func degrees(rad float64) float64 { return rad * 180 / math.Pi }
